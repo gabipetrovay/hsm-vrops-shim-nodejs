@@ -18,6 +18,7 @@ exports.vropsAlertToOpsGenieAlert = function (vropsAlert, callback) {
 
     var opsgenieAlert = {
         message: vropsAlert.alertName,
+        description: vropsAlert.info,
         details: {
             vropsAlert: vropsAlert
         }
