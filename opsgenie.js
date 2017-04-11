@@ -10,7 +10,8 @@ if (!apiKey) {
 }
 
 sdk.configure({
-    api_key: apiKey
+    api_key: apiKey,
+    proxy: process.env.http_proxy
 });
 
 exports.vropsAlertToOpsGenieAlert = function (vropsAlert, callback) {
