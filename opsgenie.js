@@ -21,7 +21,7 @@ exports.vropsAlertToOpsGenieAlert = function (vropsAlert, callback) {
         description: vropsAlert.info,
         details: {
             vropsAlert: vropsAlert
-        }
+        },
         teams: ['ops_team']
     };
 
