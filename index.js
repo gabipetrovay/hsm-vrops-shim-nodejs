@@ -17,10 +17,14 @@ https.createServer(options, (req, res) => {
     debug(req.method + ' ' + req.url);
 
     var body = '';
+
     req.on('data', (data) => {
         body += data.toString();
     });
+
     req.on('end', () => {
+
+        var statusCode = 200;
 
         if (req.method === 'POST') {
             statusCode = 201;
@@ -56,6 +60,7 @@ function sendResponse(res, statusCode, response) {
         }
         response = JSON.stringify(response);
     }
+    debug(statusCode >= 300 ? 'Error:' : 'Response:', statusCode, response);
     res.writeHead(statusCode);
     res.end(response);
 }
