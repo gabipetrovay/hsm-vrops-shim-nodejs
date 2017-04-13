@@ -21,12 +21,9 @@ if (process.env.http_proxy) {
     config.proxy = 'http://' + process.env.http_proxy;
 }
 
-debugOG('OpsGenie configuration');
-debugOG('default_options: ' + JSON.stringify(sdk.default_options));
-debugOG('default_http_options: ' + JSON.stringify(sdk.default_http_options));
-
 // configure OpsGenie SDK
 sdk.configure(config);
+debugOG('OpsGenie configuration: ' + JSON.stringify(sdk.configuration));
 
 /**
  * Given a vROps alert object, create an OpsGenie alert.
