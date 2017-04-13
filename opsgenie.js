@@ -1,4 +1,5 @@
 var debug = require('debug')('shim');
+var debugOG = require('debug')('opsgenie');
 
 var sdk = require('opsgenie-sdk');
 
@@ -19,6 +20,10 @@ var config = {
 if (process.env.http_proxy) {
     config.proxy = 'http://' + process.env.http_proxy;
 }
+
+debugOG('OpsGenie configuration: ' + JSON.stringify(default_options));
+debugOG('default_options: ' + JSON.stringify(default_options));
+debugOG('default_http_options: ' + JSON.stringify(default_http_options));
 
 // configure OpsGenie SDK
 sdk.configure(config);
