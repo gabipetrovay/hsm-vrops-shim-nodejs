@@ -21,9 +21,9 @@ if (process.env.http_proxy) {
     config.proxy = 'http://' + process.env.http_proxy;
 }
 
-debugOG('OpsGenie configuration: ' + JSON.stringify(default_options));
-debugOG('default_options: ' + JSON.stringify(default_options));
-debugOG('default_http_options: ' + JSON.stringify(default_http_options));
+debugOG('OpsGenie configuration');
+debugOG('default_options: ' + JSON.stringify(sdk.default_options));
+debugOG('default_http_options: ' + JSON.stringify(sdk.default_http_options));
 
 // configure OpsGenie SDK
 sdk.configure(config);
