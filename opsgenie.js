@@ -13,6 +13,7 @@ if (!apiKey) {
 // build the OpsGenie configuration object
 var config = {
     api_key: apiKey,
+    maxAttempts: 1,
     strictSSL: false
 };
 if (process.env.http_proxy) {
