@@ -1,14 +1,14 @@
 {
   "name": "hsm-vrops-shim-nodejs",
-  "version": "1.0.0",
-  "description": "Testing a simple vROps shim with a basic NodeJs HTTPS server",
+  "version": "0.9.0",
+  "description": "A vROps shim for OpsGenie built using a NodeJs HTTPS server",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/gabipetrovay/hsm-vrops-shim-nodejs.git"
+    "url": "git+https://github.com/gabipetrovay/vrops-shim-nodejs.git"
   },
   "author": "Gabriel Petrovay",
   "license": "ISC",
@@ -16,7 +16,7 @@
     "url": "https://github.com/gabipetrovay/hsm-vrops-shim-nodejs/issues"
   },
   "dependencies": {
-    "opsgenie-sdk": "*",
-    "debug": "*"
+    "opsgenie-sdk": "0.3.5",
+    "debug": "2.6.3"
   }
 }
