@@ -46,7 +46,7 @@ function postHandler (req, res) {
     var vropsAlert = req.body;
 
     opsgenie.createAlert(vropsAlert, (err, opsgenieAlert) => {
-        if (err) { return sendResponse(res, 500, err); }
+        if (err) { return sendResponse(res, err.httpStatusCode || 500, err.error || err); }
 
         vrops.correlateAlerts(vropsAlert, opsgenieAlert, err => {
             if (err) { return sendResponse(res, 500, err); }
