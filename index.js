@@ -19,12 +19,14 @@ https.createServer(config.https, (req, res) => {
 
     req.on('end', () => {
 
+        debug('HTTP headers: ' + JSON.stringify(req.headers));
+
         if (!body) {
             return sendResponse(res, 400, '{ error: "The request payload must not be empty" }');
         }
 
         try {
-            debug('raw body: ' + body);
+            debug('HTTP body: ' + body);
             req.body = JSON.parse(body);
         } catch (err) {
             return sendResponse(res, 500, err);
