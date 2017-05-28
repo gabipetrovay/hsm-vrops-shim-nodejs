@@ -19,11 +19,10 @@ https.createServer(config.https, (req, res) => {
 
     req.on('end', () => {
 
-        debug('HTTP requestor: ' + req.socket.remoteAddress);
         debug('HTTP headers: ' + JSON.stringify(req.headers));
 
         if (!body) {
-            return sendResponse(res, 400, '{ error: "The request payload must not be empty" }');
+            return sendResponse(res, 400, 'The request payload must not be empty');
         }
 
         try {
@@ -31,6 +30,17 @@ https.createServer(config.https, (req, res) => {
             req.body = JSON.parse(body);
         } catch (err) {
             return sendResponse(res, 500, err);
+        }
+
+        // if no vROps API endpoint is provided, try to detect the HTTP request origin
+        if (!config.vrops.apiEndpointFqdn) {
+            var origin = findHttpOrigin(req, config);
+            if (origin) {
+                config.vrops.apiEndpointFqdn = origin;
+                console.log('Using the HTTP origin as the vROps API endpoint: ' + config.vrops.apiEndpointFqdn);
+            } else {
+                return sendResponse(res, 500, 'Could not determine the HTTP origin from this request using the socket remote address: ' + req.socket.remoteAddress);
+            }
         }
 
         if (req.method === 'POST') {
@@ -85,4 +95,14 @@ function sendResponse (res, statusCode, response) {
     debug(statusCode >= 300 ? 'Error:' : 'Response:', statusCode, response);
     res.writeHead(statusCode);
     res.end(response);
+}
+
+function findHttpOrigin (req, config) {
+    var origin = req.socket.remoteAddress.match(/(?:[0-9]{1,3}\.){3}[0-9]{1,3}/);
+    if (origin) {
+        return origin[0];
+    } else if (req.socket.remoteAddress === '::1') {
+        return '127.0.0.1';
+    }
+    return undefined;
 }

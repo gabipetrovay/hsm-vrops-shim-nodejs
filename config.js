@@ -35,8 +35,7 @@ if (!config.opsgenie.apiKey) {
     process.exit(10);
 }
 if (!config.vrops.apiEndpointFqdn) {
-    console.error('Missing VROPS_API_ENDPOINT_FQDN environment variable. The vROps API endpoint cannot be empty.');
-    process.exit(10);
+    console.log('Missing VROPS_API_ENDPOINT_FQDN environment variable. The HTTP origin will be used as the vROps API endpoint.');
 }
 
 debug('Using shim configuration: ' + JSON.stringify(config, function (key, value) {
