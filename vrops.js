@@ -1,4 +1,4 @@
-var debug = require('debug')('shim');
+var debug = require('debug')('vrops');
 
 var request = require('request');
 
@@ -8,9 +8,9 @@ var config = require('./config');
 exports.correlateAlerts = function (vropsAlert, opsgenieAlert, callback) {
 
     // TODO Work around this this required
-    debug('TODO: Workaround required: https://jira.swisscom.com/browse/CLOUDENT-3520');
+    debug('TODO: Workaround required: https://jira.swisscom.com/browse/CLOUDENT-3520 (vROps alert notes API not working properly)');
 
-    // the body below contains a theoretical sample correlation if the API behavior would be correct
+    // the body below contains a theoretical sample correlation using alert notes, but the API behavior is not correct
     request({
         method: 'POST',
         url: 'https://' + config.vrops.apiEndpointFqdn + '/suite-api/api/alerts/' + vropsAlert.alertId + '/notes',

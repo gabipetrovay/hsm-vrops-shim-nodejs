@@ -44,12 +44,30 @@ exports.createAlert = function (vropsAlert, callback) {
 exports.cancelAlert = function (vropsAlert, callback) {
     debug('vROps alert:', JSON.stringify(vropsAlert));
 
+    // do not leave test alerts behind
+    if (vropsAlert.alertId === 'test') {
+        waitAndDeleteIfTestAlert(vropsAlert, callback);
+        return;
+    }
+
     sdk.alert.close({ alias: vropsAlert.alertId }, buildOptions(), function (err, alert) {
         if (err) { return callback(err); }
-        debug('OpsGenie canceled alert: ', JSON.stringify(alert));
+        debug('OpsGenie canceled alert: ' + JSON.stringify(alert));
         return callback(null, alert);
     });
 };
+
+function waitAndDeleteIfTestAlert (vropsAlert, callback) {
+    // since vROps send test alert creation and canceling very close to one another,
+    // we give OpsGenie a little time to process the creation event
+    setTimeout(function () {
+        sdk.alert.delete({ alias: vropsAlert.alertId }, buildOptions(), function (err, alert) {
+            if (err) { return callback(err); }
+            debug('OpsGenie deleted alert: ' + JSON.stringify(alert));
+            return callback(null, alert);
+        });
+    }, 2000);
+}
 
 function buildOptions () {
     var options = {

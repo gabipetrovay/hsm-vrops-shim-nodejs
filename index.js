@@ -49,7 +49,8 @@ function postHandler (req, res) {
         if (err) { return sendResponse(res, err.httpStatusCode || 500, err.error || err); }
 
         vrops.correlateAlerts(vropsAlert, opsgenieAlert, err => {
-            if (err) { return sendResponse(res, 500, err); }
+            // TODO this correlation is currently not working
+            //if (err) { return sendResponse(res, 500, err); }
             return sendResponse(res, statusCode, opsgenieAlert);
         });
     });
