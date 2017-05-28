@@ -1,6 +1,6 @@
 {
   "name": "hsm-vrops-shim-nodejs",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Testing a simple vROps shim with a basic NodeJs HTTPS server",
   "main": "index.js",
   "scripts": {
