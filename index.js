@@ -1,18 +1,13 @@
 var debug = require('debug')('http');
 
 var https = require('https');
-var fs = require('fs');
 
+var config = require('./config');
 var opsgenie = require('./opsgenie');
+var vrops = require('./vrops');
 
-var port = process.env.PORT || 3000;
 
-var options = {
-    key: fs.readFileSync('server.pem'),
-    cert: fs.readFileSync('server.pem')
-};
-
-https.createServer(options, (req, res) => {
+https.createServer(config.https, (req, res) => {
 
     debug(req.method + ' ' + req.url);
 
@@ -24,36 +19,59 @@ https.createServer(options, (req, res) => {
 
     req.on('end', () => {
 
-        var statusCode = 200;
-
-        if (req.method === 'POST') {
-            statusCode = 201;
-        } else if (req.method === 'PUT') {
-            statusCode = 202;
-        } else {
-            return sendResponse(res, 400, '{ error: "Unsupported method: ' + req.method + '" }');
-        }
-
         if (!body) {
             return sendResponse(res, 400, '{ error: "The request payload must not be empty" }');
         }
 
         try {
             debug('raw body: ' + body);
-
-            var jsonBody = JSON.parse(body);
-            opsgenie.vropsAlertToOpsGenieAlert(jsonBody, (err, alert) => {
-                if (err) { return sendResponse(res, 500, err); }
-                return sendResponse(res, statusCode, alert);
-            });
+            req.body = JSON.parse(body);
         } catch (err) {
             return sendResponse(res, 500, err);
         }
+
+        if (req.method === 'POST') {
+            postHandler(req, res);
+            return;
+        } else {
+            putHandler(req, res);
+            return;
+        }
     });
+}).listen(config.https, config.https.port);
+console.log('Listening on port: ' + config.https.port);
 
-}).listen(port);
+function postHandler (req, res) {
+    var statusCode = 201;
+    var vropsAlert = req.body;
 
-function sendResponse(res, statusCode, response) {
+    opsgenie.createAlert(vropsAlert, (err, opsgenieAlert) => {
+        if (err) { return sendResponse(res, 500, err); }
+
+        vrops.correlateAlerts(vropsAlert, opsgenieAlert, err => {
+            if (err) { return sendResponse(res, 500, err); }
+            return sendResponse(res, statusCode, opsgenieAlert);
+        });
+    });
+}
+
+function putHandler (req, res) {
+    var statusCode = 202;
+    var vropsAlert = req.body;
+
+    if (!req.body.cancelDate) {
+        var error = 'Alert updates are not completely supported. All alert updates except cancel operations are ignored.';
+        debug('TODO: ' + error);
+        return sendResponse(res, 501, new Error(error));
+    }
+
+    opsgenie.cancelAlert(vropsAlert, (err, opsgenieAlert) => {
+        if (err) { return sendResponse(res, err.httpStatusCode || 500, err.error || err); }
+        return sendResponse(res, statusCode, opsgenieAlert);
+    });
+}
+
+function sendResponse (res, statusCode, response) {
     if (typeof response === 'object') {
         if (response instanceof Error) {
             response = { error: response.toString() };
@@ -64,5 +82,3 @@ function sendResponse(res, statusCode, response) {
     res.writeHead(statusCode);
     res.end(response);
 }
-
-console.log('Listening on port: ' + port);
