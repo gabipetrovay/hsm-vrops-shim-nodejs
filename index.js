@@ -19,7 +19,7 @@ https.createServer(config.https, (req, res) => {
 
     req.on('end', () => {
 
-        debug('HTTP requestor:' + req.socket.remoteAddress);
+        debug('HTTP requestor: ' + req.socket.remoteAddress);
         debug('HTTP headers: ' + JSON.stringify(req.headers));
 
         if (!body) {
