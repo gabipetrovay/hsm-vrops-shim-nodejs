@@ -5,9 +5,19 @@ var request = require('request');
 var config = require('./config');
 
 
-exports.correlateAlerts = function (vropsAlert, opsgenieAlert, callback) {
+exports.correlateAlerts = function (vropsAlert, opsgenieAlert, options, callback) {
 
-    // TODO Work around this this required
+    if (typeof options === 'function') {
+        callback = options;
+        options = {};
+    }
+
+    var apiEndpoint = config.vrops.apiEndpointFqdn || options.apiEndpoint;
+    if (!apiEndpoint) {
+        return callback(new Error('Missing the vROps API endpoint. Please provide it either as a global config variable (VROPS_API_ENDPOINT_FQDN) or as the "apiEndpoint" option.'));
+    }
+
+    // TODO Working required
     debug('TODO: Workaround required: https://jira.swisscom.com/browse/CLOUDENT-3520 (vROps alert notes API not working properly)');
 
     // the body below contains a theoretical sample correlation using alert notes, but the API behavior is not correct

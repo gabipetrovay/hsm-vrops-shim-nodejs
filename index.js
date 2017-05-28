@@ -36,8 +36,8 @@ https.createServer(config.https, (req, res) => {
         if (!config.vrops.apiEndpointFqdn) {
             var origin = findHttpOrigin(req, config);
             if (origin) {
-                config.vrops.apiEndpointFqdn = origin;
-                console.log('Using the HTTP origin as the vROps API endpoint: ' + config.vrops.apiEndpointFqdn);
+                req.vropsApiEndpoint = origin;
+                console.log('Using the HTTP origin as the vROps API endpoint: ' + req.vropsApiEndpoint);
             } else {
                 return sendResponse(res, 500, 'Could not determine the HTTP origin from this request using the socket remote address: ' + req.socket.remoteAddress);
             }
@@ -61,7 +61,10 @@ function postHandler (req, res) {
     opsgenie.createAlert(vropsAlert, (err, opsgenieAlert) => {
         if (err) { return sendResponse(res, err.httpStatusCode || 500, err.error || err); }
 
-        vrops.correlateAlerts(vropsAlert, opsgenieAlert, err => {
+        var options = {
+            apiEndpoint: req.vropsApiEndpoint
+        }
+        vrops.correlateAlerts(vropsAlert, opsgenieAlert, options, err => {
             // TODO this correlation is currently not working
             //if (err) { return sendResponse(res, 500, err); }
             return sendResponse(res, statusCode, opsgenieAlert);
