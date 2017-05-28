@@ -1,4 +1,4 @@
-var debug = require('debug')('opsgenie');
+var debug = require('debug')('shim:opsgenie');
 
 var sdk = require('opsgenie-sdk');
 
@@ -46,25 +46,33 @@ exports.cancelAlert = function (vropsAlert, callback) {
 
     // do not leave test alerts behind
     if (vropsAlert.alertId === 'test') {
-        waitAndDeleteIfTestAlert(vropsAlert, callback);
+        waitAndDeleteTestAlert(callback);
         return;
     }
 
-    sdk.alert.close({ alias: vropsAlert.alertId }, buildOptions(), function (err, alert) {
+    sdk.alert.get({ alias: vropsAlert.alertId }, buildOptions(), function (err, alert) {
         if (err) { return callback(err); }
-        debug('OpsGenie canceled alert: ' + JSON.stringify(alert));
-        return callback(null, alert);
+
+        sdk.alert.close({ alias: vropsAlert.alertId }, buildOptions(), function (err, result) {
+            if (err) { return callback(err); }
+            debug('OpsGenie canceled alert: ' + JSON.stringify(alert));
+            return callback(null, alert);
+        });
     });
 };
 
-function waitAndDeleteIfTestAlert (vropsAlert, callback) {
+function waitAndDeleteTestAlert (callback) {
     // since vROps send test alert creation and canceling very close to one another,
     // we give OpsGenie a little time to process the creation event
     setTimeout(function () {
-        sdk.alert.delete({ alias: vropsAlert.alertId }, buildOptions(), function (err, alert) {
+        sdk.alert.get({ alias: 'test' }, buildOptions(), function (err, alert) {
             if (err) { return callback(err); }
-            debug('OpsGenie deleted alert: ' + JSON.stringify(alert));
-            return callback(null, alert);
+
+            sdk.alert.delete({ alias: 'test' }, buildOptions(), function (err, result) {
+                if (err) { return callback(err); }
+                debug('OpsGenie deleted alert: ' + JSON.stringify(alert));
+                return callback(null, alert);
+            });
         });
     }, 2000);
 }

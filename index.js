@@ -1,4 +1,4 @@
-var debug = require('debug')('http');
+var debug = require('debug')('shim:http');
 
 var https = require('https');
 
@@ -37,7 +37,7 @@ https.createServer(config.https, (req, res) => {
             var origin = findHttpOrigin(req, config);
             if (origin) {
                 req.vropsApiEndpoint = origin;
-                console.log('Using the HTTP origin as the vROps API endpoint: ' + req.vropsApiEndpoint);
+                debug('Using the HTTP origin as the vROps API endpoint: ' + req.vropsApiEndpoint);
             } else {
                 return sendResponse(res, 500, 'Could not determine the HTTP origin from this request using the socket remote address: ' + req.socket.remoteAddress);
             }
@@ -52,14 +52,18 @@ https.createServer(config.https, (req, res) => {
         }
     });
 }).listen(config.https, config.https.port);
-console.log('Listening on port: ' + config.https.port);
+debug('Listening on port: ' + config.https.port);
 
 function postHandler (req, res) {
     var statusCode = 201;
     var vropsAlert = req.body;
 
+    console.log('New vROps alert: ' + vropsAlert.alertId + ' (' + vropsAlert.alertName + ')');
+
     opsgenie.createAlert(vropsAlert, (err, opsgenieAlert) => {
         if (err) { return sendResponse(res, err.httpStatusCode || 500, err.error || err); }
+
+        console.log('OpsGenie alert ' + opsgenieAlert.alertId + ' created for vROps alert ' + vropsAlert.alertId);
 
         var options = {
             apiEndpoint: req.vropsApiEndpoint
@@ -82,8 +86,11 @@ function putHandler (req, res) {
         return sendResponse(res, 501, new Error(error));
     }
 
+    console.log('Canceled vROps alert: ' + vropsAlert.alertId + ' (' + vropsAlert.alertName + ')');
+
     opsgenie.cancelAlert(vropsAlert, (err, opsgenieAlert) => {
         if (err) { return sendResponse(res, err.httpStatusCode || 500, err.error || err); }
+        console.log('OpsGenie alert ' + opsgenieAlert.id + ' canceled for vROps alert ' + vropsAlert.alertId);
         return sendResponse(res, statusCode, opsgenieAlert);
     });
 }

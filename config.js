@@ -5,10 +5,10 @@ var fs = require('fs');
 
 // report the use of default values
 if (!process.env.HTTPS_SERVER_PEM_FILE) {
-    console.log('Missing HTTPS_SERVER_PEM_FILE environment variable. Reading the default HTTPS certificate from: server.pem');
+    console.error('Missing HTTPS_SERVER_PEM_FILE environment variable. Reading the default HTTPS certificate from: server.pem');
 }
 if (!process.env.HTTPS_PORT) {
-    console.log('Missing HTTPS_PORT environment variable. The default HTTPS port 3000 will be used to listen for incomming requests.');
+    console.error('Missing HTTPS_PORT environment variable. The default HTTPS port 3000 will be used to listen for incomming requests.');
 }
 
 var config = {
@@ -35,7 +35,7 @@ if (!config.opsgenie.apiKey) {
     process.exit(10);
 }
 if (!config.vrops.apiEndpointFqdn) {
-    console.log('Missing VROPS_API_ENDPOINT_FQDN environment variable. The HTTP origin will be used as the vROps API endpoint.');
+    console.error('Missing VROPS_API_ENDPOINT_FQDN environment variable. The HTTP origin will be used as the vROps API endpoint.');
 }
 
 debug('Using shim configuration: ' + JSON.stringify(config, function (key, value) {

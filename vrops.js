@@ -1,4 +1,4 @@
-var debug = require('debug')('vrops');
+var debug = require('debug')('shim:vrops');
 
 var request = require('request');
 
