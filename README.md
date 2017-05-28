@@ -11,7 +11,7 @@ The following environment variables must/should be set before running the server
 | `HTTPS_PORT` | No | `3000` | The port to bind the HRTTPS server to. |
 | `HTTPS_SERVER_PEM_FILE` | No | `server.pem` | The PEM file containing both the HTTPS private key and the HTTPS certificate. |
 | `OPSGENIE_API_KEY` | Yes | | The OpsGenie API key for creating and managing alerts. |
-| `VROPS_API_ENDPOINT_FQDN` | No | | The vROps API endpoint to be used for correlating alerts with OpsGenie. |
+| `VROPS_API_ENDPOINT_FQDN` | No | The HTTP request origin (remote socket IP) | The vROps API endpoint to be used for correlating alerts with OpsGenie. |
 
 Sample call:
 
